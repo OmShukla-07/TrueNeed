@@ -1,0 +1,10 @@
+Django==5.0.1
+djangorestframework==3.14.0
+djangorestframework-simplejwt==5.3.1
+python-decouple==3.8
+psycopg2-binary==2.9.9
+django-cors-headers==4.3.1
+httpx==0.26.0
+requests==2.31.0
+Pillow==11.0.0
+sendgrid==6.11.0
