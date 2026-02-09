@@ -771,10 +771,33 @@ function App() {
   };
   
   const handleDeleteAccount = async () => {
+    // Verify we have authentication before proceeding
+    const accessToken = localStorage.getItem('access_token');
+    const refreshToken = localStorage.getItem('refresh_token');
+    
+    if (!accessToken && !refreshToken) {
+      console.error('❌ No authentication tokens found!');
+      setIsDeleteModalOpen(false);
+      setIsSettingsOpen(false);
+      setDeleteTermsAgreed(false);
+      setCurrentUser(null);
+      setProfileImage(null);
+      localStorage.removeItem('user');
+      showToast('Session expired. Please log in again.', 'error');
+      return;
+    }
+    
     if (!deleteTermsAgreed) {
       showToast('Please agree to the terms before deleting your account', 'error');
       return;
     }
+    
+    console.log('🗑️ Attempting to delete account...');
+    console.log('🔑 Current tokens in localStorage:', {
+      hasAccess: !!accessToken,
+      hasRefresh: !!refreshToken,
+      access: accessToken ? accessToken.substring(0, 30) + '...' : 'NONE'
+    });
     
     try {
       await authAPI.deleteAccount();

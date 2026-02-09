@@ -438,27 +438,37 @@ class LoginView(APIView):
         email = serializer.validated_data['email']
         password = serializer.validated_data['password']
         
+        print(f"🔐 Login attempt for: {email}")
+        
         # Authenticate user
         user = authenticate(request, username=email, password=password)
         
         if user is None:
+            print(f"❌ Authentication failed for: {email}")
             return Response({
                 'error': 'Invalid email or password'
             }, status=status.HTTP_401_UNAUTHORIZED)
         
         if not user.is_active:
+            print(f"❌ Inactive account: {email}")
             return Response({
                 'error': 'Account is disabled'
             }, status=status.HTTP_403_FORBIDDEN)
         
         # Generate JWT tokens
         refresh = RefreshToken.for_user(user)
+        access_token = str(refresh.access_token)
+        refresh_token = str(refresh)
+        
+        print(f"✅ Login successful for: {email}")
+        print(f"   Access token: {access_token[:30]}...")
+        print(f"   Refresh token: {refresh_token[:30]}...")
         
         return Response({
             'user': UserSerializer(user).data,
             'tokens': {
-                'refresh': str(refresh),
-                'access': str(refresh.access_token),
+                'refresh': refresh_token,
+                'access': access_token,
             },
             'message': 'Login successful'
         }, status=status.HTTP_200_OK)
